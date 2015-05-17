@@ -27,7 +27,7 @@ Deck::~Deck() {
 
 void Deck::Shuffle() {
   srand (time(NULL));
-  for(int i = 0; i < 100; i++) {
+  for(int i = 0; i < 200; i++) {
     int n = rand() % 52;
     int m = rand() % 52;
     Card* temp = deckofcards[n];
