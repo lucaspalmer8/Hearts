@@ -2,6 +2,7 @@
 #define __deck__h
 #include<vector>
 #include"card.h"
+#include<iostream>
 
 class Deck {
 public:
@@ -14,5 +15,7 @@ public:
   static void subinstance();
   std::vector<Card*> deckofcards;
 };
+
+std::ostream& operator<<(std::ostream& out, const Deck& d);
 
 #endif

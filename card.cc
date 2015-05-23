@@ -1,4 +1,6 @@
 #include"card.h"
+#include<iostream>
+#include<sstream>
 
 using namespace std;
 
@@ -40,5 +42,43 @@ bool Card::operator<(const Card& c) {
     }
   }
 }
+
+ostream& operator<<(ostream& out, const Card& c) { //outputs a card
+  out << c.number;
+  stringstream ss;
+  ss << c.number;
+  char cc;
+  int count = 0;
+  while(ss >> cc) {
+    count++;
+  }
+  if(count == 1) {
+    out << "   ";
+  }
+  else if(count == 2) {
+    out << "  ";
+  }
+  else {
+    cerr << "Wrong number of digits in the number of a card." << endl;
+  }
+  if(c.suite == 1) {
+    out << "♣ " << endl;
+  }
+  else if(c.suite == 2) {
+    out << "♠ " << endl;
+  }
+  else if(c.suite == 3) {
+    out << "❤ " << endl;
+  }
+  else if(c.suite == 4) {
+    out << "♦" << endl;
+  }
+  else {
+    cerr << "Not a valid suite number" << endl;
+  }
+  return out;
+}  
+ 
+  
 
 

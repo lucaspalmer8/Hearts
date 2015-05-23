@@ -1,4 +1,6 @@
 #include"deck.h"
+#include"card.h"
+#include<iostream>
 #include<time.h>
 #include<cstdlib>
 
@@ -45,3 +47,11 @@ void Deck::subinstance() {
 }
 
 int Deck::instance = 0;
+
+ostream& operator<<(ostream& out, const Deck& d) {
+  for(int i = 0; i < 52; i++) {
+    out << *(d.deckofcards[i]);
+  }
+  return out;
+}
+
