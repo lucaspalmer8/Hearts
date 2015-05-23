@@ -101,7 +101,22 @@ int main() {
   vector<Card*> Sal;
   vector<Card*> Player;
   deal(carddeck, Sid, Jim, Sal, Player);
-  cout << mergesort(Player);   
+  cout << mergesort(Player);
+  if(hastwoofclubs(Sid)) {
+    vector<Card*> gametime[4] = {Sid, Jim, Sal, Player};
+  }
+  else if(hastwoofclubs(Jim)) {
+    vector<Card*> gametime[4] = {Jim, Sal, Player, Sid};
+  }
+  else if(hastwoofclubs(Sal)) {
+    vector<Card*> gametime[4] = {Sal, Player, Sid, Jim};
+  }
+  else if(hastwoofclubs(Player)) {
+    vector<Card*> gametime[4] = {Player, Sid, Jim, Sal};
+  }
+  else {
+    cerr << "Bad, nobody has two of clubs" << endl;
+  }   
 }
 
 
