@@ -152,18 +152,19 @@ void playcardspecial(vector<Card*>& hand, vector<Card*>& delt) {
     else {
       Card* pick = hand[choice];
       cout << "You played:  " << *pick << endl;
-      removecard(hand, choice);
       if(delt.size() != 0) {
         if((delt[0]->suite != pick->suite) && (countitup(hand, delt[0]->suite) != 0)) {
           cout << "Must play same suite as first card bud!" << endl;
           cout << "Enter a new number" << endl;
         }
         else {
+          removecard(hand, choice);
           delt.push_back(pick);
           break;
         }
       }
       else {
+        removecard(hand, choice);
         delt.push_back(pick);
         break;
       }
@@ -172,7 +173,30 @@ void playcardspecial(vector<Card*>& hand, vector<Card*>& delt) {
 }
   
 void playcard(vector<Card*>& hand, vector<Card*>& delt) {
-}
+  if(delt.size() == 0) {
+    Card* pick = hand[0];
+    removecard(hand, 0);
+    delt.push_back(pick);
+  }
+  else {
+    if(countitup(hand, delt[0]->suite) != 0) {
+      for(int i = 0; i < hand.size(); i++) {
+        if(hand[i]->suite == delt[0]->suite) {
+          Card* pick = hand[i];
+          removecard(hand, i);
+          delt.push_back(pick);
+          break;
+        }
+      }
+    }
+    else {
+      Card* pick = hand[0];
+      removecard(hand, 0);
+      delt.push_back(pick);
+    }
+  }
+}  
+
 
       
     
@@ -239,8 +263,7 @@ int main() {
         playcard(gametime[j], played);
       }
     }
-  } 
-     
+  }      
 }
 
 
