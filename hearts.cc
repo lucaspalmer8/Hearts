@@ -1,5 +1,6 @@
 #include<iostream>
 #include<map>
+#include<string>
 #include<sstream>
 #include"card.h"
 #include"deck.h"
@@ -197,9 +198,34 @@ void playcard(vector<Card*>& hand, vector<Card*>& delt) {
   }
 }  
 
-
-      
-    
+void updatescores(const vector<Card*>& played, vector<int>& scores) {  
+  int theone = played[0]->suite;
+  int thenumber = played[0]->number;
+  int theloser = 0;
+  for(int i = 1; i < 4; i++) {
+    if((played[i]->suite == theone) && (played[i]->number > thenumber)) {
+      thenumber = played[i]->number;
+      theloser = i;
+    }
+  }
+  int points;
+  for(int i = 0; i < 4; i++) {
+    if(played[i]->suite == 3) {
+      points += 1;
+    }
+    if((played[i]->suite == 2) && (played[i]->number == 12)) {
+      points += 13;
+    }
+  }
+  scores[theloser] += points;
+}
+  
+void printscores(const vector<string> names, const vector<int> scores) {
+  cout << endl << endl << "The scores are... " << endl;
+  for(int i = 0; i < 4; i++) {
+    cout << names[i] << "   " << scores[i] << endl;
+  }
+}
 
 int main() {
   Deck* carddeck = new Deck();
@@ -221,38 +247,40 @@ int main() {
   Player = mergesort(Player);
   int spot;
   vector<vector<Card*> > gametime;
+  vector<string> names;
   if(hastwoofclubs(Sid)) {
-    gametime.push_back(Sid); 
-    gametime.push_back(Jim); 
-    gametime.push_back(Sal); 
-    gametime.push_back(Player);
+    gametime.push_back(Sid);     names.push_back("Sid"); 
+    gametime.push_back(Jim);     names.push_back("Jim");
+    gametime.push_back(Sal);     names.push_back("Sal");
+    gametime.push_back(Player);  names.push_back(name);
     spot = 3;
   }
   else if(hastwoofclubs(Jim)) {
-    gametime.push_back(Jim); 
-    gametime.push_back(Sal); 
-    gametime.push_back(Player);
-    gametime.push_back(Sid);
+    gametime.push_back(Jim);     names.push_back("Jim");
+    gametime.push_back(Sal);     names.push_back("Sal");
+    gametime.push_back(Player);  names.push_back(name);
+    gametime.push_back(Sid);     names.push_back("Sid");
     spot = 2;
   }
   else if(hastwoofclubs(Sal)) {
-    gametime.push_back(Sal);
-    gametime.push_back(Player);
-    gametime.push_back(Sid);
-    gametime.push_back(Jim);
+    gametime.push_back(Sal);     names.push_back("Sal");
+    gametime.push_back(Player);  names.push_back(name);
+    gametime.push_back(Sid);     names.push_back("Sid");
+    gametime.push_back(Jim);     names.push_back("Jim");
     spot = 1;
   }
   else if(hastwoofclubs(Player)) {
-    gametime.push_back(Player);
-    gametime.push_back(Sid);
-    gametime.push_back(Jim);
-    gametime.push_back(Sal);
+    gametime.push_back(Player);  names.push_back(name);
+    gametime.push_back(Sid);     names.push_back("Sid");
+    gametime.push_back(Jim);     names.push_back("Jim");
+    gametime.push_back(Sal);     names.push_back("Sal");
     spot = 0;
   }
   else {
     cerr << "Bad, nobody has two of clubs" << endl;
   }
-  int playercount = 0;
+  vector<int> scores;
+  scores.push_back(0); scores.push_back(0); scores.push_back(0); scores.push_back(0);
   for(int i = 0; i < 13; i++) {
     vector<Card*> played;
     for(int j = 0; j < 4; j++) {
@@ -263,11 +291,7 @@ int main() {
         playcard(gametime[j], played);
       }
     }
+    updatescores(played, scores);
+    printscores(names, scores);
   }      
 }
-
-
-
-
-
-
