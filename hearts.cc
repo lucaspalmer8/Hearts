@@ -87,6 +87,96 @@ ostream& operator<<(ostream& out, vector<Card*> v) {
   return out;
 }
 
+void removecard(vector<Card*>& v, int index) {
+  for(int i = index; i < v.size()-1; i++) {
+    v[i] = v[i+1];
+  }
+  v.pop_back();
+}
+  
+int countitup(const vector<Card*> v, int suite) {
+  int ret = 0;
+  for(int i = 0; i < v.size(); i++) {
+    if(v[i]->suite == suite) {
+      ret++;
+    }
+  }
+  return ret;
+}
+
+void playcardspecial(vector<Card*>& hand, vector<Card*>& delt) {
+  if(delt.size() == 0) {
+    cout << "Your lead man!" << endl;
+    cout << "Your hand is:  " << endl;
+  }
+  else {
+    cout << delt.size() << " players have played already." << endl;
+    cout << "They played (in following order): " << endl;
+    for(int i = 0; i < delt.size(); i++) {
+      cout << *delt[i] << "     ";
+    }
+    cout << endl;
+  }
+  int c = 0;
+  for(vector<Card*>::iterator it = hand.begin(); it != hand.end(); it++) {
+    cout << c << ":";
+    stringstream ss;
+    ss << c;
+    char b;
+    int countdigits = 0;
+    while(ss >> b) {
+      countdigits++;
+    }
+    if(countdigits == 1) {
+      cout << "   " << **it << endl;
+    }
+    else if(countdigits == 2) {
+      cout << "  " << **it << endl;
+    }
+    else {
+      cerr << "Wrong number of digits, bad!!!" << endl;
+    }
+    c++;
+  }
+  int choice;
+  cout << "Pick card number..." << endl;
+  while(1) {
+    if(!(cin >> choice)) {
+      cout << "Please enter an integer." << endl;
+      cin.clear();
+      cin.ignore();
+    } 
+    else if(choice < 0 || choice >= hand.size()) {
+      cout << "Please enter an interger between " << 0 << " and " << hand.size()-1 << "." << endl;
+    }
+    else {
+      Card* pick = hand[choice];
+      cout << "You played:  " << *pick << endl;
+      removecard(hand, choice);
+      if(delt.size() != 0) {
+        if((delt[0]->suite != pick->suite) && (countitup(hand, delt[0]->suite) != 0)) {
+          cout << "Must play same suite as first card bud!" << endl;
+          cout << "Enter a new number" << endl;
+        }
+        else {
+          delt.push_back(pick);
+          break;
+        }
+      }
+      else {
+        delt.push_back(pick);
+        break;
+      }
+    }
+  }
+}
+  
+void playcard(vector<Card*>& hand, vector<Card*>& delt) {
+}
+
+      
+    
+
 int main() {
   Deck* carddeck = new Deck();
   carddeck->Shuffle();
@@ -101,22 +191,56 @@ int main() {
   vector<Card*> Sal;
   vector<Card*> Player;
   deal(carddeck, Sid, Jim, Sal, Player);
-  cout << mergesort(Player);
+  Sid = mergesort(Sid);
+  Jim = mergesort(Jim);
+  Sal = mergesort(Sal);
+  Player = mergesort(Player);
+  int spot;
+  vector<vector<Card*> > gametime;
   if(hastwoofclubs(Sid)) {
-    vector<Card*> gametime[4] = {Sid, Jim, Sal, Player};
+    gametime.push_back(Sid); 
+    gametime.push_back(Jim); 
+    gametime.push_back(Sal); 
+    gametime.push_back(Player);
+    spot = 3;
   }
   else if(hastwoofclubs(Jim)) {
-    vector<Card*> gametime[4] = {Jim, Sal, Player, Sid};
+    gametime.push_back(Jim); 
+    gametime.push_back(Sal); 
+    gametime.push_back(Player);
+    gametime.push_back(Sid);
+    spot = 2;
   }
   else if(hastwoofclubs(Sal)) {
-    vector<Card*> gametime[4] = {Sal, Player, Sid, Jim};
+    gametime.push_back(Sal);
+    gametime.push_back(Player);
+    gametime.push_back(Sid);
+    gametime.push_back(Jim);
+    spot = 1;
   }
   else if(hastwoofclubs(Player)) {
-    vector<Card*> gametime[4] = {Player, Sid, Jim, Sal};
+    gametime.push_back(Player);
+    gametime.push_back(Sid);
+    gametime.push_back(Jim);
+    gametime.push_back(Sal);
+    spot = 0;
   }
   else {
     cerr << "Bad, nobody has two of clubs" << endl;
-  }   
+  }
+  int playercount = 0;
+  for(int i = 0; i < 13; i++) {
+    vector<Card*> played;
+    for(int j = 0; j < 4; j++) {
+      if(j == spot) {
+        playcardspecial(gametime[j], played);
+      }
+      else {
+        playcard(gametime[j], played);
+      }
+    }
+  } 
+     
 }
 
 

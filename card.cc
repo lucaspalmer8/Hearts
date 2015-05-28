@@ -62,16 +62,16 @@ ostream& operator<<(ostream& out, const Card& c) { //outputs a card
     cerr << "Wrong number of digits in the number of a card." << endl;
   }
   if(c.suite == 1) {
-    out << "♣ " << endl;
+    out << "♣ ";
   }
   else if(c.suite == 2) {
-    out << "♠ " << endl;
+    out << "♠ ";
   }
   else if(c.suite == 3) {
-    out << "❤ " << endl;
+    out << "❤ ";
   }
   else if(c.suite == 4) {
-    out << "♦" << endl;
+    out << "♦";
   }
   else {
     cerr << "Not a valid suite number" << endl;
