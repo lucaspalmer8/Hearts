@@ -2,6 +2,8 @@
 #include<map>
 #include<string>
 #include<sstream>
+#include<cstdlib>
+#include<time.h>
 #include"card.h"
 #include"deck.h"
 
@@ -173,30 +175,39 @@ void playcardspecial(vector<Card*>& hand, vector<Card*>& delt) {
   }
 }
   
-void playcard(vector<Card*>& hand, vector<Card*>& delt) {
+void playcardeasy(vector<Card*>& hand, vector<Card*>& delt) {
+  srand (time(NULL));
   if(delt.size() == 0) {
-    Card* pick = hand[0];
-    removecard(hand, 0);
+    int play = rand() % hand.size();
+    Card* pick = hand[play];
+    removecard(hand, play);
     delt.push_back(pick);
   }
   else {
-    if(countitup(hand, delt[0]->suite) != 0) {
+    int counter = countitup(hand, delt[0]->suite);
+    if(counter != 0) {
       for(int i = 0; i < hand.size(); i++) {
         if(hand[i]->suite == delt[0]->suite) {
-          Card* pick = hand[i];
-          removecard(hand, i);
+          int play = rand() % counter;
+          Card* pick = hand[i+play];
+          removecard(hand, i+play);
           delt.push_back(pick);
           break;
         }
       }
     }
     else {
-      Card* pick = hand[0];
-      removecard(hand, 0);
+      int play = rand() % hand.size();
+      Card* pick = hand[play];
+      removecard(hand, play);
       delt.push_back(pick);
     }
   }
 }  
+
+void playcardhard(vector<Card*>& hand, vector<Card*>& delt) {
+  //unimplemented yet
+}
 
 void updatescores(const vector<Card*>& played, vector<int>& scores, int& next) {  
   int theone = played[0]->suite;
@@ -238,7 +249,8 @@ void printscores(const vector<string> names, const vector<int> scores) {
   }
 }
 
-int main() {
+void playhearts(string& level) {
+  cout << endl << endl << endl << endl << endl << endl;
   Deck* carddeck = new Deck();
   carddeck->Shuffle();
   //cout << *carddeck;
@@ -290,10 +302,89 @@ int main() {
         playcardspecial(gametime[togo], played);
       }
       else {
-        playcard(gametime[togo], played);
+        if(level == "easy") playcardeasy(gametime[togo], played);
+        if(level == "hard") playcardhard(gametime[togo], played);
       }
     }
     updatescores(played, scores, next);
   }
-  printscores(names, scores);      
+  printscores(names, scores);
+  delete carddeck;      
 }
+
+void asklevel(string& level) {  //asks about the preferred level of difficulty
+  string answer;
+  while(1) {
+    cout << endl << endl << endl << endl << endl << endl;
+    cout << "What level do you want to play?! (easy/hard)" << endl;
+    getline(cin,answer);
+    stringstream sss(answer);
+    sss >> answer;
+    if(answer == "easy" && !(sss >> answer)) {
+      level = "easy";
+      break;
+    }
+    else if(answer == "hard" && !(sss >> answer)) {
+      level = "hard";
+      break;
+    }
+    else {
+      cout << "Please enter easy or hard!" << endl;
+    }
+  }
+}
+
+int ask(string& level) {   //asks if you want to play hearts
+  int val = 1;
+  string answer;
+  while(1) {
+    cout << endl << endl << endl << endl << endl << endl;
+    cout << "Would you like to play hearts?! (yes/no)" << endl;
+    getline(cin,answer);
+    stringstream sss(answer);
+    sss >> answer;
+    if(answer == "yes" && !(sss >> answer)) {
+      asklevel(level);
+      break;
+    }
+    else if(answer == "no" && !(sss >> answer)) {
+      cout << "OK, bye!" << endl;
+      val = 0;
+      break;
+    }
+    else {
+      cout << "Please enter yes or no!" << endl;
+    }
+  }
+  return val;
+}
+
+
+int main() {
+  string level;
+  while(1) {
+    if(ask(level)) {
+      playhearts(level);
+    }
+    else {
+      break;
+    }
+  }
+}
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
