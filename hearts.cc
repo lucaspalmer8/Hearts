@@ -198,17 +198,19 @@ void playcard(vector<Card*>& hand, vector<Card*>& delt) {
   }
 }  
 
-void updatescores(const vector<Card*>& played, vector<int>& scores) {  
+void updatescores(const vector<Card*>& played, vector<int>& scores, int& next) {  
   int theone = played[0]->suite;
   int thenumber = played[0]->number;
-  int theloser = 0;
+  int theloser = next;
   for(int i = 1; i < 4; i++) {
+    int atcard = (next + i) % 4;
     if((played[i]->suite == theone) && (played[i]->number > thenumber)) {
       thenumber = played[i]->number;
-      theloser = i;
+      theloser = atcard;
     }
   }
-  int points;
+  next = theloser;  
+  int points = 0;
   for(int i = 0; i < 4; i++) {
     if(played[i]->suite == 3) {
       points += 1;
@@ -217,7 +219,16 @@ void updatescores(const vector<Card*>& played, vector<int>& scores) {
       points += 13;
     }
   }
-  scores[theloser] += points;
+  if(points == 26) {
+    for(int i = 0; i < 4; i++) {
+      if(i != theloser) {
+        scores[theloser] += 26;
+      }
+    }
+  } 
+  else {
+    scores[theloser] += points;
+  }
 }
   
 void printscores(const vector<string> names, const vector<int> scores) {
@@ -245,36 +256,25 @@ int main() {
   Jim = mergesort(Jim);
   Sal = mergesort(Sal);
   Player = mergesort(Player);
-  int spot;
+  int spot = 3;  //holds the spot of the player
+  int next;  //holds the spot of the next player to go
   vector<vector<Card*> > gametime;
   vector<string> names;
+  gametime.push_back(Sid);     names.push_back("Sid"); 
+  gametime.push_back(Jim);     names.push_back("Jim");
+  gametime.push_back(Sal);     names.push_back("Sal");
+  gametime.push_back(Player);  names.push_back(name);
   if(hastwoofclubs(Sid)) {
-    gametime.push_back(Sid);     names.push_back("Sid"); 
-    gametime.push_back(Jim);     names.push_back("Jim");
-    gametime.push_back(Sal);     names.push_back("Sal");
-    gametime.push_back(Player);  names.push_back(name);
-    spot = 3;
+    next = 0;
   }
   else if(hastwoofclubs(Jim)) {
-    gametime.push_back(Jim);     names.push_back("Jim");
-    gametime.push_back(Sal);     names.push_back("Sal");
-    gametime.push_back(Player);  names.push_back(name);
-    gametime.push_back(Sid);     names.push_back("Sid");
-    spot = 2;
+    next = 1;
   }
   else if(hastwoofclubs(Sal)) {
-    gametime.push_back(Sal);     names.push_back("Sal");
-    gametime.push_back(Player);  names.push_back(name);
-    gametime.push_back(Sid);     names.push_back("Sid");
-    gametime.push_back(Jim);     names.push_back("Jim");
-    spot = 1;
+    next = 2;
   }
   else if(hastwoofclubs(Player)) {
-    gametime.push_back(Player);  names.push_back(name);
-    gametime.push_back(Sid);     names.push_back("Sid");
-    gametime.push_back(Jim);     names.push_back("Jim");
-    gametime.push_back(Sal);     names.push_back("Sal");
-    spot = 0;
+    next = 3;
   }
   else {
     cerr << "Bad, nobody has two of clubs" << endl;
@@ -282,16 +282,18 @@ int main() {
   vector<int> scores;
   scores.push_back(0); scores.push_back(0); scores.push_back(0); scores.push_back(0);
   for(int i = 0; i < 13; i++) {
+   cout << endl << endl << endl << endl << endl << endl << endl;
     vector<Card*> played;
     for(int j = 0; j < 4; j++) {
-      if(j == spot) {
-        playcardspecial(gametime[j], played);
+      int togo = (next + j) % 4;
+      if(togo == spot) {
+        playcardspecial(gametime[togo], played);
       }
       else {
-        playcard(gametime[j], played);
+        playcard(gametime[togo], played);
       }
     }
-    updatescores(played, scores);
-    printscores(names, scores);
-  }      
+    updatescores(played, scores, next);
+  }
+  printscores(names, scores);      
 }
