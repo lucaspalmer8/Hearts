@@ -107,9 +107,9 @@ int countitup(const vector<Card*> v, int suite) { //counts the number of specifi
   return ret;
 }
 
-void playcardspecial(vector<Card*>& hand, vector<Card*>& delt, int i, int j) { //player must play a card
+void playcardspecial(vector<Card*>& hand, vector<Card*>& delt, int i, int j, string name) { //player must play a card
   if(delt.size() == 0) {
-    cout << "Your lead man!" << endl;
+    cout << "Your lead " << name << "!" << endl;
     cout << "Your hand is:  " << endl;
   }
   else {
@@ -142,15 +142,19 @@ void playcardspecial(vector<Card*>& hand, vector<Card*>& delt, int i, int j) { /
     c++;
   }
   int choice;
-  cout << "Pick card number..." << endl;
+  cout << name << ", pick the card number that you want to play..." << endl;
+  string temp;
   while(1) {
-    if(!(cin >> choice)) {
-      cout << "Please enter an integer." << endl;
-      cin.clear();
-      cin.ignore();
+    getline(cin, temp);
+    stringstream sss(temp);
+    if(!(sss >> choice)) {
+      cout << name << ", please enter an integer." << endl;
     } 
+    else if(sss >> temp) {
+      cout << name << ", please enter a single value." << endl;
+    }
     else if(choice < 0 || choice >= hand.size()) {
-      cout << "Please enter an interger between " << 0 << " and " << hand.size()-1 << "." << endl;
+      cout << name << ", please enter an interger between " << 0 << " and " << hand.size()-1 << "." << endl;
     }
     else {
       Card* pick = hand[choice];
@@ -169,7 +173,7 @@ void playcardspecial(vector<Card*>& hand, vector<Card*>& delt, int i, int j) { /
       else {
         //"This is j: " << j << "  This is i: " << i << " This is suite: " << pick->suite << " This is number: " << pick->number << endl;
 	if(j == 0 && i == 0 && (pick->suite != 1 || pick->number != 2)) {
-          cout << "Must lead with the two of clubs man!" << endl;
+          cout << "Must lead with the two of clubs, " << name << "." << endl;
           cout << "Enter a new number." << endl;
         }
         else {
@@ -224,7 +228,44 @@ void playcardeasy(vector<Card*>& hand, vector<Card*>& delt, int i, int j) { //co
 }  
 
 void playcardhard(vector<Card*>& hand, vector<Card*>& delt, int i, int j) {
-  //unimplemented yet
+  srand (time(NULL));
+  if(delt.size() == 0) {
+    int play = rand() % hand.size();
+    Card* pick;
+    if(i == 0 && j == 0) {
+      if(hand[0]->number == 2) {
+        pick = hand[0];
+      }
+      else {
+        pick = hand[1];
+      }
+    }
+    else {
+      pick = hand[play];
+    }
+    removecard(hand, play);
+    delt.push_back(pick);
+  }
+  else {
+    int counter = countitup(hand, delt[0]->suite);
+    if(counter != 0) {
+      for(int i = 0; i < hand.size(); i++) {
+        if(hand[i]->suite == delt[0]->suite) {
+          int play = rand() % counter;
+          Card* pick = hand[i+play];
+          removecard(hand, i+play);
+          delt.push_back(pick);
+          break;
+        }
+      }
+    }
+    else {
+      int play = rand() % hand.size();
+      Card* pick = hand[play];
+      removecard(hand, play);
+      delt.push_back(pick);
+    }
+  }
 }
 
 void updatescores(const vector<Card*>& played, vector<int>& scores, int& next) {  
@@ -261,7 +302,7 @@ void updatescores(const vector<Card*>& played, vector<int>& scores, int& next) {
 }
   
 void printscores(const vector<string> names, const vector<int> scores) {
-  cout << endl << endl << "The scores are... " << endl;
+  cout << endl << endl << endl << endl << endl << endl << "The scores are... " << endl;
   for(int i = 0; i < 4; i++) {
     cout << names[i] << "   " << scores[i] << endl;
   }
@@ -272,7 +313,7 @@ void playhearts(string& level) {
   Deck* carddeck = new Deck();
   carddeck->Shuffle();
   //cout << *carddeck;
-  cout << "You are playing hearts today!" << endl;
+  cout << "Welcome to the game of hearts!"  << endl;
   cout << "You will play against 3 other players, Sid, Jim, and Sal!" << endl;
   cout << "Enter name please: ";
   string name;
@@ -317,7 +358,7 @@ void playhearts(string& level) {
     for(int j = 0; j < 4; j++) {
       int togo = (next + j) % 4;
       if(togo == spot) {
-        playcardspecial(gametime[togo], played, i, j);
+        playcardspecial(gametime[togo], played, i, j, name);
       }
       else {
         if(level == "easy") playcardeasy(gametime[togo], played, i, j);
