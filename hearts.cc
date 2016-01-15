@@ -251,17 +251,49 @@ void playcardhard(vector<Card*>& hand, vector<Card*>& delt, int i, int j) {
     if(counter != 0) {
       for(int i = 0; i < hand.size(); i++) {
         if(hand[i]->suite == delt[0]->suite) {
-          int play = rand() % counter;
-          Card* pick = hand[i+play];
-          removecard(hand, i+play);
+		  Card* pick = hand[i];
+		  int play = i;
+		  for(int j = 0; j < counter; j++) {
+			int cardnumber = hand[i+j]->number;
+			if(cardnumber < delt[0]->number || (delt.size() > 1 && cardnumber < delt[1]->number) 
+				|| (delt.size() > 2 && cardnumber < delt[2]->number)) {
+			  play = i+j;
+			  pick = hand[i+j];
+			}
+		  }
+          removecard(hand, i);
           delt.push_back(pick);
           break;
         }
       }
     }
     else {
-      int play = rand() % hand.size();
-      Card* pick = hand[play];
+	  //get rid of a bad card!
+	  int play = -1;	  //the index of the card you want to play
+	  Card* pick = 0;     //the card you want to play
+	  for(int i = 0; i < hand.size(); i++) {
+	    if(hand[i]->suite == 2 && hand[i]->number == 12) {
+		  //queen of spades
+		  play = i;
+		  pick = hand[i];
+		  
+		} 
+	  }
+	  if(!pick) {
+	    for(int i = 0; i < hand.size(); i++) {
+		  if(hand[i]->suite == 3) {
+			//a heart
+			if(!pick || pick->number < hand[i]->number) {
+			  play = i;
+		      pick = hand[i];
+			}
+		  }
+		}
+	  }
+	  if(!pick) {
+	    play = rand() % hand.size();
+      	pick = hand[play];
+	  }
       removecard(hand, play);
       delt.push_back(pick);
     }
